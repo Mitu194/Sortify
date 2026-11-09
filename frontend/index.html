@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sortify | Sorting Visualizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="details">
+    <strong>Faculty In Charge</strong>
+    <span>Prof. Nirav Patel</span>
+  </div>
+  <a class="brand" href="#">Sorting - Data Structures <br/> Innovative Assignment 2</a>
+  <div class="who">
+    <strong>Mituben Patel</strong>
+    <span>Roll no. 26MCA031</span>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- Controls -->
+  <aside class="sidebar">
+    <h1>Sorting Visualization</h1>
+    <p class="syllabus-note">Bubble, selection, insertion, merge and quick sort are in the syllabus. Heap sort is extra, added for the innovative assignment.</p>
+    <p class="intro">Enter some numbers, pick an algorithm and step through every comparison and swap.</p>
+
+    <label for="arrayInput">Numbers <span>separated by commas, up to 100</span></label>
+    <div class="input-row">
+      <input id="arrayInput" value="6, 0, 5, 4, 3, 2, 1" aria-label="Array values">
+      <button class="btn btn-soft" id="randomBtn" title="Fill with 8 random numbers">Random</button>
+    </div>
+
+    <label for="algorithm">Algorithm</label>
+    <select id="algorithm">
+      <option value="bubble">Bubble sort</option>
+      <option value="selection">Selection sort</option>
+      <option value="insertion">Insertion sort</option>
+      <option value="merge">Merge sort</option>
+      <option value="quick">Quick sort</option>
+      <option value="heap">Heap sort</option>
+    </select>
+
+    <label for="order">Order</label>
+    <select id="order">
+      <option value="asc">Smallest first</option>
+      <option value="desc">Largest first</option>
+    </select>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="startBtn">Visualize sorting</button>
+      <button class="btn btn-outline" id="resetBtn">Reset</button>
+    </div>
+    <p id="error" class="error" role="alert"></p>
+  </aside>
+
+  <!-- Visualization -->
+  <section class="stage" aria-labelledby="visualTitle">
+    <div class="stage-head">
+      <h2 id="visualTitle">Bubble Sort</h2>
+      <span id="stepLabel" class="step-pill">Ready to start</span>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot default"></i>Not touched</span>
+      <span><i class="dot compare"></i>Being compared</span>
+      <span><i class="dot swap"></i>Swapped or moved</span>
+      <span><i class="dot sorted"></i>Finished</span>
+    </div>
+
+    <div id="bars" class="bars" aria-label="Array visualization"></div>
+
+    <div class="playback">
+      <button class="btn btn-soft" id="prevBtn" disabled>Back</button>
+      <button class="btn btn-primary" id="playBtn" disabled>Play</button>
+      <button class="btn btn-soft" id="nextBtn" disabled>Next</button>
+      <button class="btn btn-outline" id="restartBtn" disabled>Start over</button>
+      <label class="speed">Speed
+        <select id="speed">
+          <option value="1200">0.5×</option>
+          <option value="650" selected>1×</option>
+          <option value="300">2×</option>
+          <option value="100">4×</option>
+        </select>
+      </label>
+    </div>
+
+    <p id="eventMessage" class="event-message">Enter an array and select Visualize sorting to begin.</p>
+
+    <dl class="metrics">
+      <div><dt>Comparisons</dt><dd id="comparisons">0</dd></div>
+      <div><dt>Swaps</dt><dd id="swaps">0</dd></div>
+      <div><dt>Writes</dt><dd id="writes">0</dd></div>
+      <div><dt>Passes</dt><dd id="passes">0</dd></div>
+      <div><dt>Run time</dt><dd id="time">—</dd></div>
+    </dl>
+  </section>
+
+  <!-- Explanation + code -->
+  <section class="learn">
+    <article class="explain">
+      <h2>How it works</h2>
+      <p id="algorithmDescription" class="description"></p>
+
+      <h3>Steps</h3>
+      <ol id="algorithmSteps" class="algorithm-steps"></ol>
+
+      <h3>Time and space</h3>
+      <table class="complexity">
+        <tr><th>Best case</th><td id="bestCase">—</td></tr>
+        <tr><th>Average case</th><td id="averageCase">—</td></tr>
+        <tr><th>Worst case</th><td id="worstCase">—</td></tr>
+        <tr><th>Extra space</th><td id="spaceCase">—</td></tr>
+      </table>
+    </article>
+
+    <article class="code-side">
+      <div class="code-head">
+        <h2>C source</h2>
+      </div>
+      <pre class="code-window"><code id="codeDisplay"></code></pre>
+
+      <h3>Variables right now</h3>
+      <div id="variables" class="variables"><span>Run the algorithm to inspect variables.</span></div>
+    </article>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
