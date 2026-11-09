@@ -138,6 +138,7 @@ const info = {
     }
 };
 let events = [], cursor = 0, timer = null, elapsed = 0, finalArray = [];
+let visualizationMode = "array";
 function parseInput() { const raw = $("arrayInput").value.trim(); if (!raw) throw Error("Enter at least one integer."); const parts = raw.split(/[,\s]+/); if (parts.length > 100) throw Error("Maximum array size is 100."); const nums = parts.map(x => { if (!/^-?\d+$/.test(x)) throw Error(`"${x}" is not a valid integer.`); const n = Number(x); if (!Number.isSafeInteger(n) || Math.abs(n) > 1000000) throw Error("Values must be between -1,000,000 and 1,000,000."); return n; }); return nums; }
 function showAlgorithm() { const key = $("algorithm").value, d = info[key]; $("visualTitle").textContent = d.name; $("algorithmDescription").textContent = d.desc; $("algorithmSteps").innerHTML = d.steps.map(s => `<li>${s}</li>`).join(""); $("bestCase").textContent = d.best; $("averageCase").textContent = d.average; $("worstCase").textContent = d.worst; $("spaceCase").textContent = d.space; loadSource(); }
 function loadSource() {
@@ -151,7 +152,54 @@ function loadSource() {
     ).join("");
 }
 function escapeHtml(s) { return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"); }
-function draw(values, ev = {}) { const max = Math.max(1, ...values.map(v => Math.abs(v))); const compare = [ev.i, ev.j].filter(x => Number.isInteger(x) && x >= 0); const swap = ev.type === "swap" ? [ev.i, ev.j] : []; const isDone = cursor === events.length - 1 && events.length > 0 && ev.message === "Sorting completed"; $("bars").innerHTML = values.map((v, i) => { let cls = isDone ? "sorted" : swap.includes(i) ? "swap" : compare.includes(i) ? "compare" : ""; let height = Math.max(3, Math.abs(v) / max * 88); return `<div class="bar-wrap"><div class="bar ${cls}" style="height:${height}%"><span class="bar-value">${v}</span></div><span class="bar-index">${i}</span></div>`; }).join(""); }
+function draw(values, ev = {}) {
+    const container = $("bars");
+    const compare = [ev.i, ev.j].filter(x => Number.isInteger(x) && x >= 0 && x < values.length);
+    const moved = ev.type === "swap" ? [ev.i, ev.j] : ev.type === "write" ? [ev.i] : [];
+    const isDone = cursor === events.length - 1 && events.length > 0 && ev.message === "Sorting completed";
+    const max = Math.max(1, ...values.map(v => Math.abs(v)));
+
+    container.classList.toggle("array-view", visualizationMode === "array");
+    container.classList.toggle("bar-view", visualizationMode === "bars");
+    container.setAttribute("aria-label", visualizationMode === "array" ? "Array cell visualization" : "Bar chart visualization");
+
+    container.innerHTML = values.map((value, index) => {
+        const state = isDone ? "sorted" : moved.includes(index) ? "swap" : compare.includes(index) ? "compare" : "";
+        if (visualizationMode === "array") {
+            return `<div class="array-item ${state}">
+                <span class="array-index">${index}</span>
+                <span class="array-value">${value}</span>
+            </div>`;
+        }
+
+        // Use a shared zero baseline so negative values are represented correctly.
+        const height = Math.max(3, (Math.abs(value) / max) * 88);
+        return `<div class="bar-wrap ${state}">
+            <span class="bar-value">${value}</span>
+            <div class="bar ${state}" style="height:${height}%" title="Index ${index}: ${value}"></div>
+            <span class="bar-index">${index}</span>
+        </div>`;
+    }).join("");
+}
+
+function setVisualizationMode(mode) {
+    visualizationMode = mode;
+    $("arrayViewBtn").classList.toggle("active", mode === "array");
+    $("barViewBtn").classList.toggle("active", mode === "bars");
+    $("arrayViewBtn").setAttribute("aria-pressed", String(mode === "array"));
+    $("barViewBtn").setAttribute("aria-pressed", String(mode === "bars"));
+    $("viewHint").textContent = mode === "array"
+        ? "Values shown in indexed cells"
+        : "Bar height represents value size";
+
+    // Redraw the current event only; the sorting trace and playback position stay unchanged.
+    if (events.length) draw(events[cursor].values, events[cursor]);
+    else {
+        try { draw(parseInput()); }
+        catch { draw([45, 12, 89, 23, 5]); }
+    }
+}
+
 function render() {
     if (!events.length) return; const ev = events[cursor]; draw(ev.values, ev); $("stepLabel").textContent = `Step ${cursor + 1} / ${events.length}`; $("eventMessage").textContent = ev.message; $("comparisons").textContent = ev.counts.comparisons; $("swaps").textContent = ev.counts.swaps; $("writes").textContent = ev.counts.writes; $("time").textContent = cursor === events.length - 1 ? `${elapsed.toFixed(3)} ms` : "—";
     document.querySelectorAll(".code-line").forEach(el => el.classList.toggle("active", Number(el.dataset.line) === ev.line));
@@ -187,4 +235,6 @@ function reset() {
     ["prevBtn", "playBtn", "nextBtn", "restartBtn"].forEach(id => $(id).disabled = true);
 }
 $("algorithm").addEventListener("change", () => { showAlgorithm(); reset(); }); $("startBtn").addEventListener("click", start); $("playBtn").addEventListener("click", play); $("nextBtn").addEventListener("click", () => { stop(); next(); }); $("prevBtn").addEventListener("click", () => { stop(); if (cursor > 0) { cursor--; render(); } }); $("restartBtn").addEventListener("click", () => { stop(); cursor = 0; render(); }); $("resetBtn").addEventListener("click", reset); $("randomBtn").addEventListener("click", () => { $("arrayInput").value = Array.from({ length: 8 }, () => Math.floor(Math.random() * 90) + 10).join(", "); reset(); }); $("speed").addEventListener("change", () => { if (timer) { stop(); play(); } });
+$("arrayViewBtn").addEventListener("click", () => setVisualizationMode("array"));
+$("barViewBtn").addEventListener("click", () => setVisualizationMode("bars"));
 showAlgorithm(); reset();

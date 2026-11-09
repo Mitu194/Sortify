@@ -74,7 +74,16 @@
       <span><i class="dot sorted"></i>Finished</span>
     </div>
 
-    <div id="bars" class="bars" aria-label="Array visualization"></div>
+    <div class="view-toolbar" role="group" aria-label="Choose visualization style">
+      <span class="view-label">View</span>
+      <div class="view-switch">
+        <button type="button" class="view-btn active" id="arrayViewBtn" aria-pressed="true">Array</button>
+        <button type="button" class="view-btn" id="barViewBtn" aria-pressed="false">Bars</button>
+      </div>
+      <span class="view-hint" id="viewHint">Values shown in indexed cells</span>
+    </div>
+
+    <div id="bars" class="visualization array-view" aria-label="Array visualization" aria-live="polite"></div>
 
     <div class="playback">
       <button class="btn btn-soft" id="prevBtn" disabled>Back</button>

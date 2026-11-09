@@ -42,3 +42,8 @@ Open http://127.0.0.1:5000
 - Input is limited to 100 integers between -1,000,000 and 1,000,000.
 - The code panel loads the actual `algorithms/sortify.c` source file. Trace events carry C source line numbers, so the corresponding line is highlighted during playback.
 - Execution time includes process startup and trace output, so it is a teaching/demo metric, not a rigorous benchmark. Use repeated runs and larger input sizes for benchmarking.
+
+
+## Visualization modes
+
+Sortify provides two synchronized visualization modes: **Array view** displays indexed value cells, while **Bar view** represents values with proportional bar heights. Switch between them at any time during playback; the current sorting event and playback position are preserved.
